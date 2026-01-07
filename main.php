@@ -615,7 +615,7 @@ $totalApproved = array_sum(array_map(fn($p) => $p['status'] === 'approved' ? $p[
                                                 ✗ Reject
                                             </button>
                                         </form>
-                                    <?php else: ?>
+                                    <?php elseif ($payment['status'] === 'rejected'): ?>
                                         <form method="POST" style="display: inline;">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="payment_id" value="<?= $payment['id'] ?>">
