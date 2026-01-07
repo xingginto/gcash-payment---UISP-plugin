@@ -55,7 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'clientId' => (int)$payment['clientId'],
                     'amount' => (float)$payment['amount'],
                     'note' => 'GCash Payment - Ref: ' . $payment['referenceNumber'],
-                    'applyToInvoicesAutomatically' => true
+                    'applyToInvoicesAutomatically' => true,
+                    'userId' => $user->userId ?? null
                 ];
                 
                 // Add payment method if configured (by name or UUID)
