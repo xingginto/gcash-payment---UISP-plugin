@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+// Set session timeout to 10 minutes (600 seconds)
+ini_set('session.gc_maxlifetime', '600');
+session_set_cookie_params(600);
+session_start();
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Ubnt\UcrmPluginSdk\Service\UcrmApi;
@@ -162,14 +167,6 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
     $clientName = $_SESSION['gcash_client_name'];
     $sessionAmount = $_SESSION['gcash_amount'];
     $sessionAccountNumber = $_SESSION['gcash_account_number'];
-}
-
-// Start session if not started
-if (session_status() === PHP_SESSION_NONE) {
-    // Set session to expire after 10 minutes
-    ini_set('session.gc_maxlifetime', 600); // 600 seconds = 10 minutes
-    session_set_cookie_params(600); // 10 minutes
-    session_start();
 }
 
 ?>
