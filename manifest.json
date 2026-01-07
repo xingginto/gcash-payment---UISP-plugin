@@ -24,12 +24,6 @@
       "target": "iframe"
     }
   ],
-  "public": [
-    {
-      "label": "Pay with GCash",
-      "url": "public.php"
-    }
-  ],
   "configuration": [
     {
       "key": "gcashNumber",
