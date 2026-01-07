@@ -58,9 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'applyToInvoicesAutomatically' => true
                 ];
                 
-                // Add payment method if configured
-                if (!empty($config['paymentMethodId'])) {
-                    $paymentData['methodId'] = $config['paymentMethodId'];
+                // Add payment method if configured (must be valid UUID format)
+                $methodId = $config['paymentMethodId'] ?? '';
+                if (!empty($methodId) && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $methodId)) {
+                    $paymentData['methodId'] = $methodId;
                 }
                 
                 $response = $api->post('payments', $paymentData);
