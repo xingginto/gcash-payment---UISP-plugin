@@ -26,27 +26,81 @@
   ],
   "configuration": [
     {
-      "key": "gcashNumber",
-      "label": "GCash Number",
-      "description": "Your GCash mobile number (e.g., 09171234567)",
+      "key": "gcashNumber1",
+      "label": "GCash Account #1 - Number",
+      "description": "GCash mobile number for Account #1 (e.g., 09171234567)",
       "required": 1
     },
     {
-      "key": "gcashName",
-      "label": "GCash Account Name",
-      "description": "Name registered on your GCash account",
+      "key": "gcashName1",
+      "label": "GCash Account #1 - Name",
+      "description": "Name registered on GCash Account #1",
       "required": 1
     },
     {
-      "key": "gcashQrCode",
-      "label": "GCash QR Code URL",
-      "description": "URL to your GCash QR code image (upload to cloud storage and paste link)",
+      "key": "gcashQrCode1",
+      "label": "GCash Account #1 - QR Code URL",
+      "description": "URL to QR code image for Account #1",
+      "required": 0
+    },
+    {
+      "key": "gcashDays1",
+      "label": "GCash Account #1 - Active Days",
+      "description": "Days when Account #1 is active (e.g., 1-10 or 1,2,3,15). Leave empty to always use this account.",
+      "required": 0
+    },
+    {
+      "key": "gcashNumber2",
+      "label": "GCash Account #2 - Number",
+      "description": "GCash mobile number for Account #2",
+      "required": 0
+    },
+    {
+      "key": "gcashName2",
+      "label": "GCash Account #2 - Name",
+      "description": "Name registered on GCash Account #2",
+      "required": 0
+    },
+    {
+      "key": "gcashQrCode2",
+      "label": "GCash Account #2 - QR Code URL",
+      "description": "URL to QR code image for Account #2",
+      "required": 0
+    },
+    {
+      "key": "gcashDays2",
+      "label": "GCash Account #2 - Active Days",
+      "description": "Days when Account #2 is active (e.g., 11-20)",
+      "required": 0
+    },
+    {
+      "key": "gcashNumber3",
+      "label": "GCash Account #3 - Number",
+      "description": "GCash mobile number for Account #3",
+      "required": 0
+    },
+    {
+      "key": "gcashName3",
+      "label": "GCash Account #3 - Name",
+      "description": "Name registered on GCash Account #3",
+      "required": 0
+    },
+    {
+      "key": "gcashQrCode3",
+      "label": "GCash Account #3 - QR Code URL",
+      "description": "URL to QR code image for Account #3",
+      "required": 0
+    },
+    {
+      "key": "gcashDays3",
+      "label": "GCash Account #3 - Active Days",
+      "description": "Days when Account #3 is active (e.g., 21-31)",
       "required": 0
     },
     {
       "key": "paymentMethodId",
-      "label": "UISP Payment Method ID",
-      "description": "UUID of the payment method in UISP (leave empty to use default or create 'GCash' method)",
+      "label": "UISP Payment Method",
+      "description": "Payment method name or UUID (e.g., GCASH-Plugin or a UUID)",
       "required": 0
     },
     {

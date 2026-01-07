@@ -53,11 +53,70 @@ try {
     $messageType = 'error';
 }
 
-$gcashNumber = $config['gcashNumber'] ?? '';
-$gcashName = $config['gcashName'] ?? '';
-$gcashQrCode = $config['gcashQrCode'] ?? '';
 $recaptchaSiteKey = $config['recaptchaSiteKey'] ?? '';
 $recaptchaSecretKey = $config['recaptchaSecretKey'] ?? '';
+
+// Function to check if current day matches the configured days
+function isDayActive($daysConfig) {
+    if (empty($daysConfig)) {
+        return true; // Empty means always active
+    }
+    
+    $currentDay = (int)date('j'); // Current day of month (1-31)
+    $parts = preg_split('/[,\s]+/', $daysConfig);
+    
+    foreach ($parts as $part) {
+        $part = trim($part);
+        if (empty($part)) continue;
+        
+        // Check for range (e.g., 1-10)
+        if (strpos($part, '-') !== false) {
+            list($start, $end) = explode('-', $part, 2);
+            $start = (int)trim($start);
+            $end = (int)trim($end);
+            if ($currentDay >= $start && $currentDay <= $end) {
+                return true;
+            }
+        } else {
+            // Single day
+            if ($currentDay === (int)$part) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+// Select active GCash account based on current date
+$gcashNumber = '';
+$gcashName = '';
+$gcashQrCode = '';
+$activeAccount = 0;
+
+// Check accounts in order (1, 2, 3)
+for ($i = 1; $i <= 3; $i++) {
+    $number = $config["gcashNumber{$i}"] ?? '';
+    $name = $config["gcashName{$i}"] ?? '';
+    $qrCode = $config["gcashQrCode{$i}"] ?? '';
+    $days = $config["gcashDays{$i}"] ?? '';
+    
+    if (!empty($number) && !empty($name) && isDayActive($days)) {
+        $gcashNumber = $number;
+        $gcashName = $name;
+        $gcashQrCode = $qrCode;
+        $activeAccount = $i;
+        break;
+    }
+}
+
+// Fallback to Account #1 if no active account found
+if (empty($gcashNumber)) {
+    $gcashNumber = $config['gcashNumber1'] ?? '';
+    $gcashName = $config['gcashName1'] ?? '';
+    $gcashQrCode = $config['gcashQrCode1'] ?? '';
+    $activeAccount = 1;
+}
 
 // Function to verify reCAPTCHA v3
 function verifyRecaptcha($token, $secretKey) {
