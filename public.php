@@ -591,7 +591,7 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
         // Format reference number input
         document.querySelector('input[name="reference_number"]')?.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 12) value = value.substr(0, 12);
+            if (value.length > 20) value = value.substr(0, 20);
             e.target.value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
         });
     </script>
