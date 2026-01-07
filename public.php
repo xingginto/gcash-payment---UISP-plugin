@@ -597,6 +597,76 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
             text-decoration: underline;
         }
         
+        .reminders-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .reminders-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .reminders-icon {
+            width: 40px;
+            height: 40px;
+            background: #fbbf24;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .reminders-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .reminders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .reminder-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .reminder-number {
+            width: 24px;
+            height: 24px;
+            background: #e0e7ff;
+            color: #4f46e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .reminder-item p {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .reminder-item strong {
+            color: #1f2937;
+        }
+        
         .instructions {
             background: #fef3c7;
             border: 1px solid #fbbf24;
@@ -734,6 +804,27 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         <button type="submit" class="submit-btn">Submit Payment</button>
                     </form>
                 <?php endif; ?>
+            </div>
+        </div>
+        
+        <div class="reminders-card">
+            <div class="reminders-header">
+                <div class="reminders-icon">⏰</div>
+                <h3>Reminders</h3>
+            </div>
+            <div class="reminders-list">
+                <div class="reminder-item">
+                    <span class="reminder-number">1</span>
+                    <p>Make sure your account number is correct. <strong>We</strong> will only credit your payment if provided with the correct information.</p>
+                </div>
+                <div class="reminder-item">
+                    <span class="reminder-number">2</span>
+                    <p>Your payment will be posted in <strong>24 hours</strong>.</p>
+                </div>
+                <div class="reminder-item">
+                    <span class="reminder-number">3</span>
+                    <p>By using this service, you agree to our Terms and Conditions.</p>
+                </div>
             </div>
         </div>
         
