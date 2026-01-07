@@ -273,10 +273,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api !== null) {
                 $payments = json_decode(file_get_contents($paymentsFile), true) ?: [];
             }
             
-            // Check for duplicate reference
+            // Check for duplicate reference (normalize by removing spaces)
             $isDuplicate = false;
+            $normalizedRef = preg_replace('/\s+/', '', $referenceNumber);
             foreach ($payments as $p) {
-                if ($p['referenceNumber'] === $referenceNumber) {
+                $existingRef = preg_replace('/\s+/', '', $p['referenceNumber'] ?? '');
+                if ($existingRef === $normalizedRef) {
                     $isDuplicate = true;
                     break;
                 }
