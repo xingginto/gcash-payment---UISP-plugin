@@ -13,13 +13,13 @@ use Ubnt\UcrmPluginSdk\Service\UcrmApi;
 use Ubnt\UcrmPluginSdk\Service\PluginConfigManager;
 use Ubnt\UcrmPluginSdk\Service\UcrmSecurity;
 
-// Check if admin user is logged in - redirect to admin page
+// Check if admin user is logged in - load admin page instead
 try {
     $security = UcrmSecurity::create();
     $user = $security->getUser();
     if ($user) {
-        // Admin is logged in, redirect to main.php
-        header('Location: main.php');
+        // Admin is logged in, include main.php instead
+        require_once __DIR__ . '/main.php';
         exit;
     }
 } catch (Exception $e) {
