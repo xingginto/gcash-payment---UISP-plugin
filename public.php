@@ -175,12 +175,16 @@ if (isset($_GET['success']) && isset($_GET['ref'])) {
     $message = 'Payment submitted successfully! Reference: ' . htmlspecialchars($_GET['ref']) . '. Please wait for verification.';
     $messageType = 'success';
     $step = 1;
-} elseif (isset($_GET['step']) && $_GET['step'] === '2') {
-    $step = 2;
-} elseif (isset($_GET['error'])) {
-    $message = htmlspecialchars($_GET['error']);
-    $messageType = 'error';
-    $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
+} else {
+    // Check for error first (can have both step and error)
+    if (isset($_GET['error'])) {
+        $message = htmlspecialchars($_GET['error']);
+        $messageType = 'error';
+    }
+    // Set step if provided
+    if (isset($_GET['step'])) {
+        $step = (int)$_GET['step'];
+    }
 }
 
 // Handle form submission
