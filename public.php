@@ -145,11 +145,17 @@ function verifyRecaptcha($token, $secretKey) {
     return isset($response['success']) && $response['success'] && ($response['score'] ?? 0) >= 0.5;
 }
 
-// Check for success redirect
+// Check for redirects (PRG pattern)
 if (isset($_GET['success']) && isset($_GET['ref'])) {
     $message = 'Payment submitted successfully! Reference: ' . htmlspecialchars($_GET['ref']) . '. Please wait for verification.';
     $messageType = 'success';
     $step = 1;
+} elseif (isset($_GET['step']) && $_GET['step'] === '2') {
+    $step = 2;
+} elseif (isset($_GET['error'])) {
+    $message = htmlspecialchars($_GET['error']);
+    $messageType = 'error';
+    $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
 }
 
 // Handle form submission
@@ -161,18 +167,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api !== null) {
     $recaptchaValid = verifyRecaptcha($recaptchaToken, $recaptchaSecretKey);
     
     if (!$recaptchaValid) {
-        $message = 'Security verification failed. Please try again.';
-        $messageType = 'error';
+        $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?error=' . urlencode('Security verification failed. Please try again.');
+        header('Location: ' . $redirectUrl);
+        exit;
     } elseif ($action === 'verify_account') {
         $accountNumber = trim($_POST['account_number'] ?? '');
         $amount = trim($_POST['amount'] ?? '');
         
         if (empty($accountNumber)) {
-            $message = 'Account number is required.';
-            $messageType = 'error';
+            $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?error=' . urlencode('Account number is required.');
+            header('Location: ' . $redirectUrl);
+            exit;
         } elseif (empty($amount) || !is_numeric($amount) || floatval($amount) <= 0) {
-            $message = 'Please enter a valid amount.';
-            $messageType = 'error';
+            $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?error=' . urlencode('Please enter a valid amount.');
+            header('Location: ' . $redirectUrl);
+            exit;
         } else {
             // Find client by account number
             try {
@@ -191,27 +200,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api !== null) {
                     $_SESSION['gcash_client_name'] = trim(($foundClient['firstName'] ?? '') . ' ' . ($foundClient['lastName'] ?? ''));
                     $_SESSION['gcash_account_number'] = $accountNumber;
                     $_SESSION['gcash_amount'] = floatval($amount);
-                    $step = 2;
+                    // Redirect to step 2 (PRG pattern)
+                    $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?step=2';
+                    header('Location: ' . $redirectUrl);
+                    exit;
                 } else {
-                    $message = 'Account number not found. Please check and try again.';
-                    $messageType = 'error';
+                    $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?error=' . urlencode('Account number not found. Please check and try again.');
+                    header('Location: ' . $redirectUrl);
+                    exit;
                 }
             } catch (Exception $e) {
-                $message = 'Error verifying account. Please try again.';
-                $messageType = 'error';
+                $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?error=' . urlencode('Error verifying account. Please try again.');
+                header('Location: ' . $redirectUrl);
+                exit;
             }
         }
     } elseif ($action === 'submit_payment') {
         $referenceNumber = trim($_POST['reference_number'] ?? '');
         
         if (empty($referenceNumber)) {
-            $message = 'GCash reference number is required.';
-            $messageType = 'error';
-            $step = 2;
+            $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?step=2&error=' . urlencode('GCash reference number is required.');
+            header('Location: ' . $redirectUrl);
+            exit;
         } elseif (!isset($_SESSION['gcash_client_id'])) {
-            $message = 'Session expired. Please start over.';
-            $messageType = 'error';
-            $step = 1;
+            $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?error=' . urlencode('Session expired. Please start over.');
+            header('Location: ' . $redirectUrl);
+            exit;
         } else {
             // Save pending payment
             $pendingPayment = [
@@ -244,9 +258,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api !== null) {
             }
             
             if ($isDuplicate) {
-                $message = 'This reference number has already been submitted.';
-                $messageType = 'error';
-                $step = 2;
+                $redirectUrl = strtok($_SERVER['REQUEST_URI'], '?') . '?step=2&error=' . urlencode('This reference number has already been submitted.');
+                header('Location: ' . $redirectUrl);
+                exit;
             } else {
                 // Save payment
                 $payments[] = $pendingPayment;
