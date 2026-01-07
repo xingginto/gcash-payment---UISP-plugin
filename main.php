@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// Set timezone to Philippine time
+date_default_timezone_set('Asia/Manila');
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Ubnt\UcrmPluginSdk\Service\UcrmApi;

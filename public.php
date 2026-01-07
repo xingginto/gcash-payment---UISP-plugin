@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// Set timezone to Philippine time
+date_default_timezone_set('Asia/Manila');
+
 // Set session timeout to 10 minutes (600 seconds)
 ini_set('session.gc_maxlifetime', '600');
 session_set_cookie_params(600);
