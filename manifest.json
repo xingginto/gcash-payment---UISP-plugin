@@ -1,0 +1,71 @@
+{
+  "version": "1",
+  "information": {
+    "name": "gcash-payment",
+    "displayName": "GCash Payment",
+    "description": "Accept GCash payments via QR code with payment verification and auto-posting to client accounts",
+    "url": "https://github.com/xingginto/",
+    "version": "1.0.0",
+    "ucrmVersionCompliancy": {
+      "min": "2.14.0",
+      "max": null
+    },
+    "unmsVersionCompliancy": {
+      "min": "1.0.0",
+      "max": null
+    },
+    "author": "xingginto"
+  },
+  "menu": [
+    {
+      "key": "Reports",
+      "label": "GCash Payments",
+      "type": "admin",
+      "target": "iframe"
+    }
+  ],
+  "public": [
+    {
+      "label": "Pay with GCash",
+      "url": "public.php"
+    }
+  ],
+  "configuration": [
+    {
+      "key": "gcashNumber",
+      "label": "GCash Number",
+      "description": "Your GCash mobile number (e.g., 09171234567)",
+      "required": 1
+    },
+    {
+      "key": "gcashName",
+      "label": "GCash Account Name",
+      "description": "Name registered on your GCash account",
+      "required": 1
+    },
+    {
+      "key": "gcashQrCode",
+      "label": "GCash QR Code URL",
+      "description": "URL to your GCash QR code image (upload to cloud storage and paste link)",
+      "required": 0
+    },
+    {
+      "key": "paymentMethodId",
+      "label": "UISP Payment Method ID",
+      "description": "UUID of the payment method in UISP (leave empty to use default or create 'GCash' method)",
+      "required": 0
+    },
+    {
+      "key": "autoApprove",
+      "label": "Auto-approve payments",
+      "description": "Set to 1 to auto-approve payments (not recommended), 0 for manual approval",
+      "required": 0
+    },
+    {
+      "key": "notificationEmail",
+      "label": "Notification Email",
+      "description": "Email to receive payment notifications",
+      "required": 0
+    }
+  ]
+}

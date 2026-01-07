@@ -1,0 +1,15 @@
+{
+    "name": "xingginto/gcash-payment",
+    "description": "GCash Payment plugin for UISP - Accept payments via QR code with verification",
+    "type": "ucrm-plugin",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4",
+        "ubnt/ucrm-plugin-sdk": "^0.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "GcashPayment\\": "src/"
+        }
+    }
+}
