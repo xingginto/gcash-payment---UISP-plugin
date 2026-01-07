@@ -11,6 +11,20 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Ubnt\UcrmPluginSdk\Service\UcrmApi;
 use Ubnt\UcrmPluginSdk\Service\PluginConfigManager;
+use Ubnt\UcrmPluginSdk\Service\UcrmSecurity;
+
+// Check if admin user is logged in - redirect to admin page
+try {
+    $security = UcrmSecurity::create();
+    $user = $security->getUser();
+    if ($user) {
+        // Admin is logged in, redirect to main.php
+        header('Location: main.php');
+        exit;
+    }
+} catch (Exception $e) {
+    // Not logged in, continue to public page
+}
 
 // Initialize
 $api = null;
