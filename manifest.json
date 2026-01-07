@@ -19,10 +19,9 @@
   "menu": [
     {
       "key": "Reports",
-      "label": "GCash Payments",
+      "label": "GCash Admin",
       "type": "admin",
-      "target": "iframe",
-      "url": "main.php"
+      "target": "iframe"
     }
   ],
   "public": [
