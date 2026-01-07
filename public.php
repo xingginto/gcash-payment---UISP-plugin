@@ -93,15 +93,29 @@ $gcashNumber = '';
 $gcashName = '';
 $gcashQrCode = '';
 $activeAccount = 0;
+$fallbackAccount = 0;
 
-// Check accounts in order (1, 2, 3)
+// Check accounts - prioritize those with specific dates first
 for ($i = 1; $i <= 3; $i++) {
     $number = $config["gcashNumber{$i}"] ?? '';
     $name = $config["gcashName{$i}"] ?? '';
     $qrCode = $config["gcashQrCode{$i}"] ?? '';
     $days = $config["gcashDays{$i}"] ?? '';
     
-    if (!empty($number) && !empty($name) && isDayActive($days)) {
+    if (empty($number) || empty($name)) {
+        continue;
+    }
+    
+    // If days is empty, this is a fallback account (always active)
+    if (empty($days)) {
+        if ($fallbackAccount === 0) {
+            $fallbackAccount = $i;
+        }
+        continue;
+    }
+    
+    // Check if current day matches configured days
+    if (isDayActive($days)) {
         $gcashNumber = $number;
         $gcashName = $name;
         $gcashQrCode = $qrCode;
@@ -110,7 +124,15 @@ for ($i = 1; $i <= 3; $i++) {
     }
 }
 
-// Fallback to Account #1 if no active account found
+// Use fallback account if no date-specific account matched
+if (empty($gcashNumber) && $fallbackAccount > 0) {
+    $gcashNumber = $config["gcashNumber{$fallbackAccount}"] ?? '';
+    $gcashName = $config["gcashName{$fallbackAccount}"] ?? '';
+    $gcashQrCode = $config["gcashQrCode{$fallbackAccount}"] ?? '';
+    $activeAccount = $fallbackAccount;
+}
+
+// Final fallback to Account #1 if nothing found
 if (empty($gcashNumber)) {
     $gcashNumber = $config['gcashNumber1'] ?? '';
     $gcashName = $config['gcashName1'] ?? '';
