@@ -60,6 +60,18 @@
       "label": "Notification Email",
       "description": "Email to receive payment notifications",
       "required": 0
+    },
+    {
+      "key": "recaptchaSiteKey",
+      "label": "reCAPTCHA v3 Site Key",
+      "description": "Google reCAPTCHA v3 site key (get from google.com/recaptcha)",
+      "required": 0
+    },
+    {
+      "key": "recaptchaSecretKey",
+      "label": "reCAPTCHA v3 Secret Key",
+      "description": "Google reCAPTCHA v3 secret key",
+      "required": 0
     }
   ]
 }

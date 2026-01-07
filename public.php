@@ -56,6 +56,35 @@ try {
 $gcashNumber = $config['gcashNumber'] ?? '';
 $gcashName = $config['gcashName'] ?? '';
 $gcashQrCode = $config['gcashQrCode'] ?? '';
+$recaptchaSiteKey = $config['recaptchaSiteKey'] ?? '';
+$recaptchaSecretKey = $config['recaptchaSecretKey'] ?? '';
+
+// Function to verify reCAPTCHA v3
+function verifyRecaptcha($token, $secretKey) {
+    if (empty($secretKey) || empty($token)) {
+        return true; // Skip if not configured
+    }
+    
+    $url = 'https://www.google.com/recaptcha/api/siteverify';
+    $data = [
+        'secret' => $secretKey,
+        'response' => $token
+    ];
+    
+    $options = [
+        'http' => [
+            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method' => 'POST',
+            'content' => http_build_query($data)
+        ]
+    ];
+    
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    $response = json_decode($result, true);
+    
+    return isset($response['success']) && $response['success'] && ($response['score'] ?? 0) >= 0.5;
+}
 
 // Check for success redirect
 if (isset($_GET['success']) && isset($_GET['ref'])) {
@@ -67,8 +96,15 @@ if (isset($_GET['success']) && isset($_GET['ref'])) {
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api !== null) {
     $action = $_POST['action'] ?? '';
+    $recaptchaToken = $_POST['recaptcha_token'] ?? '';
     
-    if ($action === 'verify_account') {
+    // Verify reCAPTCHA if configured
+    $recaptchaValid = verifyRecaptcha($recaptchaToken, $recaptchaSecretKey);
+    
+    if (!$recaptchaValid) {
+        $message = 'Security verification failed. Please try again.';
+        $messageType = 'error';
+    } elseif ($action === 'verify_account') {
         $accountNumber = trim($_POST['account_number'] ?? '');
         $amount = trim($_POST['amount'] ?? '');
         
@@ -190,6 +226,9 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pay with GCash</title>
+    <?php if ($recaptchaSiteKey): ?>
+    <script src="https://www.google.com/recaptcha/api.js?render=<?= htmlspecialchars($recaptchaSiteKey) ?>"></script>
+    <?php endif; ?>
     <style>
         * {
             margin: 0;
@@ -514,8 +553,9 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                 
                 <?php if ($step === 1): ?>
                     <!-- Step 1: Enter Account Number and Amount -->
-                    <form method="POST">
+                    <form method="POST" id="form-step1">
                         <input type="hidden" name="action" value="verify_account">
+                        <input type="hidden" name="recaptcha_token" id="recaptcha_token_1">
                         
                         <div class="form-group">
                             <label>Account Number <span class="required">*</span></label>
@@ -543,10 +583,6 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         <div class="row">
                             <span class="label">Account:</span>
                             <span class="value"><?= htmlspecialchars($sessionAccountNumber ?? '') ?></span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Name:</span>
-                            <span class="value"><?= htmlspecialchars($clientName ?? '') ?></span>
                         </div>
                         <div class="row">
                             <span class="label">Amount:</span>
@@ -579,12 +615,13 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         </ol>
                     </div>
                     
-                    <form method="POST">
+                    <form method="POST" id="form-step2">
                         <input type="hidden" name="action" value="submit_payment">
+                        <input type="hidden" name="recaptcha_token" id="recaptcha_token_2">
                         
                         <div class="form-group">
                             <label>GCash Reference Number <span class="required">*</span></label>
-                            <input type="text" name="reference_number" placeholder="e.g., 1234 5678 9012" 
+                            <input type="text" name="reference_number" placeholder="e.g., 1036 573 280143" 
                                    value="<?= htmlspecialchars($referenceNumber) ?>" required
                                    pattern="[0-9\s]+" title="Please enter only numbers">
                             <p class="help-text">Found in your GCash payment confirmation</p>
@@ -602,12 +639,32 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
     </div>
     
     <script>
-        // Format reference number input
+        // Format reference number input (4-3-6 format)
         document.querySelector('input[name="reference_number"]')?.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 20) value = value.substr(0, 20);
-            e.target.value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            if (value.length > 13) value = value.substr(0, 13);
+            let formatted = '';
+            if (value.length > 0) formatted = value.substr(0, 4);
+            if (value.length > 4) formatted += ' ' + value.substr(4, 3);
+            if (value.length > 7) formatted += ' ' + value.substr(7, 6);
+            e.target.value = formatted;
         });
+        
+        <?php if ($recaptchaSiteKey): ?>
+        // reCAPTCHA v3 form handling
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const tokenInput = form.querySelector('input[name="recaptcha_token"]');
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('<?= htmlspecialchars($recaptchaSiteKey) ?>', {action: 'submit'}).then(function(token) {
+                        tokenInput.value = token;
+                        form.submit();
+                    });
+                });
+            });
+        });
+        <?php endif; ?>
     </script>
 </body>
 </html>
