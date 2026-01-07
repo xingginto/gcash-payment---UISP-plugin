@@ -712,6 +712,11 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
     </div>
     
     <script>
+        // Clean URL after page load (remove query parameters)
+        if (window.location.search) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
         // Format reference number input (4-3-6 format)
         document.querySelector('input[name="reference_number"]')?.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
