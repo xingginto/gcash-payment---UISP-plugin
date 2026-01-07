@@ -166,11 +166,10 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
 
 // Start session if not started
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-    
     // Set session to expire after 10 minutes
-    ini_set('session.gc_maxlifetime', 600);
-    session_set_cookie_params(600);
+    ini_set('session.gc_maxlifetime', 600); // 600 seconds = 10 minutes
+    session_set_cookie_params(600); // 10 minutes
+    session_start();
 }
 
 ?>
