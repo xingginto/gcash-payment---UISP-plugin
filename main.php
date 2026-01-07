@@ -456,6 +456,22 @@ $totalApproved = array_sum(array_map(fn($p) => $p['status'] === 'approved' ? $p[
             color: #6b7280;
         }
         
+        .gcash-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .gcash-info span {
+            font-weight: 500;
+            color: #007dfe;
+        }
+        
+        .gcash-info small {
+            font-size: 11px;
+            color: #6b7280;
+        }
+        
         .config-notice {
             background: #fef3c7;
             border: 1px solid #fbbf24;
@@ -547,6 +563,7 @@ $totalApproved = array_sum(array_map(fn($p) => $p['status'] === 'approved' ? $p[
                     <tr>
                         <th>Date</th>
                         <th>Client</th>
+                        <th>GCash Account</th>
                         <th>Amount</th>
                         <th>Reference</th>
                         <th>Status</th>
@@ -561,6 +578,12 @@ $totalApproved = array_sum(array_map(fn($p) => $p['status'] === 'approved' ? $p[
                                 <div class="client-info">
                                     <span class="client-name"><?= htmlspecialchars($payment['clientName']) ?></span>
                                     <span class="account-number">#<?= htmlspecialchars($payment['accountNumber']) ?></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="gcash-info">
+                                    <span><?= htmlspecialchars($payment['gcashNumber'] ?? 'N/A') ?></span>
+                                    <small><?= htmlspecialchars($payment['gcashName'] ?? '') ?></small>
                                 </div>
                             </td>
                             <td class="amount">₱<?= number_format($payment['amount'], 2) ?></td>
