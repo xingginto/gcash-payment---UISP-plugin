@@ -21,7 +21,8 @@
       "key": "Reports",
       "label": "GCash Payments",
       "type": "admin",
-      "target": "iframe"
+      "target": "iframe",
+      "url": "main.php"
     }
   ],
   "public": [
