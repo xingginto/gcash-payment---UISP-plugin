@@ -838,11 +838,19 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         <p class="name"><?= htmlspecialchars($gcashName) ?></p>
                     </div>
                     
+                    <?php if ($gcashQrCode): ?>
+                    <button type="button" class="open-gcash-btn" onclick="openGCashWithQR('<?= htmlspecialchars($gcashQrCode) ?>')">
+                        <span class="gcash-btn-icon">📱</span>
+                        <span class="gcash-btn-text">Open GCash & Scan QR</span>
+                        <span class="gcash-btn-hint">QR will open for scanning</span>
+                    </button>
+                    <?php else: ?>
                     <button type="button" class="open-gcash-btn" onclick="copyAndOpenGCash('<?= htmlspecialchars($gcashNumber) ?>')">
                         <span class="gcash-btn-icon">📱</span>
                         <span class="gcash-btn-text">Copy Number & Open GCash</span>
                         <span class="gcash-btn-hint">Paste in Send Money</span>
                     </button>
+                    <?php endif; ?>
                     
                     <div class="instructions">
                         <h4>📱 How to Pay:</h4>
@@ -904,6 +912,19 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
         // Clean URL after page load (remove query parameters)
         if (window.location.search) {
             window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        // Open GCash with QR code for scanning
+        function openGCashWithQR(qrCodeUrl) {
+            // Open QR code image in new window for user to scan
+            const qrWindow = window.open(qrCodeUrl, '_blank');
+            
+            showToast('✅ QR Code opened! Open GCash → Scan QR → Scan from screen');
+            
+            // Try to open GCash app after delay
+            setTimeout(function() {
+                window.location.href = 'gcash://';
+            }, 1500);
         }
         
         // Copy GCash number and open app
