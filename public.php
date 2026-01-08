@@ -667,6 +667,67 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
             color: #1f2937;
         }
         
+        .open-gcash-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #007dfe 0%, #0057b8 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 125, 254, 0.3);
+        }
+        
+        .open-gcash-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 125, 254, 0.4);
+        }
+        
+        .open-gcash-btn:active {
+            transform: translateY(0);
+        }
+        
+        .gcash-btn-icon {
+            font-size: 28px;
+        }
+        
+        .gcash-btn-text {
+            font-size: 16px;
+            font-weight: 600;
+            flex-grow: 1;
+            text-align: left;
+        }
+        
+        .gcash-btn-hint {
+            font-size: 11px;
+            opacity: 0.8;
+            text-align: right;
+        }
+        
+        .copy-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .copy-toast.show {
+            opacity: 1;
+        }
+        
         .instructions {
             background: #fef3c7;
             border: 1px solid #fbbf24;
@@ -777,6 +838,12 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         <p class="name"><?= htmlspecialchars($gcashName) ?></p>
                     </div>
                     
+                    <button type="button" class="open-gcash-btn" onclick="copyAndOpenGCash('<?= htmlspecialchars($gcashNumber) ?>')">
+                        <span class="gcash-btn-icon">📱</span>
+                        <span class="gcash-btn-text">Open in GCash</span>
+                        <span class="gcash-btn-hint">Tap to copy number & open app</span>
+                    </button>
+                    
                     <div class="instructions">
                         <h4>📱 How to Pay:</h4>
                         <ol>
@@ -837,6 +904,47 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
         // Clean URL after page load (remove query parameters)
         if (window.location.search) {
             window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        // Copy GCash number and open app
+        function copyAndOpenGCash(gcashNumber) {
+            // Remove spaces from number
+            const cleanNumber = gcashNumber.replace(/\s/g, '');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(cleanNumber).then(function() {
+                // Show toast
+                showToast('GCash number copied! Opening GCash app...');
+                
+                // Try to open GCash app after a short delay
+                setTimeout(function() {
+                    // Try GCash deep link
+                    window.location.href = 'gcash://';
+                }, 500);
+            }).catch(function() {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = cleanNumber;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('GCash number copied! Open GCash app manually.');
+            });
+        }
+        
+        function showToast(message) {
+            let toast = document.querySelector('.copy-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.className = 'copy-toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
         }
         
         // Format reference number input (4-3-6 format)
