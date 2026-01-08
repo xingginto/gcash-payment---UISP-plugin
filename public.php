@@ -840,8 +840,8 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                     
                     <button type="button" class="open-gcash-btn" onclick="copyAndOpenGCash('<?= htmlspecialchars($gcashNumber) ?>')">
                         <span class="gcash-btn-icon">📱</span>
-                        <span class="gcash-btn-text">Open in GCash</span>
-                        <span class="gcash-btn-hint">Tap to copy number & open app</span>
+                        <span class="gcash-btn-text">Copy Number & Open GCash</span>
+                        <span class="gcash-btn-hint">Paste in Send Money</span>
                     </button>
                     
                     <div class="instructions">
@@ -914,13 +914,13 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
             // Copy to clipboard
             navigator.clipboard.writeText(cleanNumber).then(function() {
                 // Show toast
-                showToast('GCash number copied! Opening GCash app...');
+                showToast('✅ Number copied! Tap Send Money → Paste the number');
                 
                 // Try to open GCash app after a short delay
                 setTimeout(function() {
                     // Try GCash deep link
                     window.location.href = 'gcash://';
-                }, 500);
+                }, 800);
             }).catch(function() {
                 // Fallback for older browsers
                 const textArea = document.createElement('textarea');
@@ -929,7 +929,7 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                showToast('GCash number copied! Open GCash app manually.');
+                showToast('✅ Number copied! Open GCash → Send Money → Paste');
             });
         }
         
