@@ -838,10 +838,10 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         <p class="name"><?= htmlspecialchars($gcashName) ?></p>
                     </div>
                     
-                    <button type="button" class="open-gcash-btn" onclick="copyAndOpenGCash('<?= htmlspecialchars($gcashNumber) ?>')">
+                    <button type="button" class="open-gcash-btn" onclick="openGCashScanner()">
                         <span class="gcash-btn-icon">📱</span>
-                        <span class="gcash-btn-text">Open GCash QR Scanner</span>
-                        <span class="gcash-btn-hint">Scan the QR code above</span>
+                        <span class="gcash-btn-text">Open GCash & Scan QR</span>
+                        <span class="gcash-btn-hint">Opens QR scanner directly</span>
                     </button>
                     
                     <div class="instructions">
@@ -906,40 +906,23 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
             window.history.replaceState({}, document.title, window.location.pathname);
         }
         
-        // Copy GCash number and open app with QR scanner
-        function copyAndOpenGCash(gcashNumber) {
-            // Remove spaces from number
-            const cleanNumber = gcashNumber.replace(/\s/g, '');
+        // Open GCash QR scanner
+        function openGCashScanner() {
+            showToast('📷 Opening GCash QR scanner...');
             
-            // Copy to clipboard
-            navigator.clipboard.writeText(cleanNumber).then(function() {
-                showToast('✅ Opening GCash QR Scanner...');
-            }).catch(function() {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = cleanNumber;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            });
-            
-            // Try different GCash deep links for QR scanner
-            // GCash uses various deep link schemes
-            const deepLinks = [
-                'gcash://scan',           // Direct scan
-                'gcash://qr',             // QR feature
-                'gcash://pay/scan',       // Pay with scan
-                'https://m.gcash.com/gcash-app/scan'  // Web fallback
-            ];
-            
-            // Try the first deep link that works
-            window.location.href = deepLinks[0];
-            
-            // Fallback after delay if first doesn't work
+            // Try GCash QR scanner deep link
             setTimeout(function() {
-                showToast('📱 Scan the QR code shown above');
-            }, 1500);
+                // Try different GCash deep links for QR scanner
+                window.location.href = 'gcash://scan';
+            }, 300);
+            
+            // Fallback timeout - if app doesn't open, show message
+            setTimeout(function() {
+                // Check if page is still visible (app didn't open)
+                if (!document.hidden) {
+                    showToast('📱 Please open GCash app and tap Scan QR');
+                }
+            }, 2000);
         }
         
         function showToast(message) {
