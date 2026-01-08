@@ -838,19 +838,11 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                         <p class="name"><?= htmlspecialchars($gcashName) ?></p>
                     </div>
                     
-                    <?php if ($gcashQrCode): ?>
-                    <button type="button" class="open-gcash-btn" onclick="openGCashWithQR('<?= htmlspecialchars($gcashQrCode) ?>')">
-                        <span class="gcash-btn-icon">📱</span>
-                        <span class="gcash-btn-text">Open GCash & Scan QR</span>
-                        <span class="gcash-btn-hint">QR will open for scanning</span>
-                    </button>
-                    <?php else: ?>
                     <button type="button" class="open-gcash-btn" onclick="copyAndOpenGCash('<?= htmlspecialchars($gcashNumber) ?>')">
                         <span class="gcash-btn-icon">📱</span>
-                        <span class="gcash-btn-text">Copy Number & Open GCash</span>
-                        <span class="gcash-btn-hint">Paste in Send Money</span>
+                        <span class="gcash-btn-text">Open GCash QR Scanner</span>
+                        <span class="gcash-btn-hint">Scan the QR code above</span>
                     </button>
-                    <?php endif; ?>
                     
                     <div class="instructions">
                         <h4>📱 How to Pay:</h4>
@@ -914,34 +906,14 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
             window.history.replaceState({}, document.title, window.location.pathname);
         }
         
-        // Open GCash with QR code for scanning
-        function openGCashWithQR(qrCodeUrl) {
-            // Open QR code image in new window for user to scan
-            const qrWindow = window.open(qrCodeUrl, '_blank');
-            
-            showToast('✅ QR Code opened! Open GCash → Scan QR → Scan from screen');
-            
-            // Try to open GCash app after delay
-            setTimeout(function() {
-                window.location.href = 'gcash://';
-            }, 1500);
-        }
-        
-        // Copy GCash number and open app
+        // Copy GCash number and open app with QR scanner
         function copyAndOpenGCash(gcashNumber) {
             // Remove spaces from number
             const cleanNumber = gcashNumber.replace(/\s/g, '');
             
             // Copy to clipboard
             navigator.clipboard.writeText(cleanNumber).then(function() {
-                // Show toast
-                showToast('✅ Number copied! Tap Send Money → Paste the number');
-                
-                // Try to open GCash app after a short delay
-                setTimeout(function() {
-                    // Try GCash deep link
-                    window.location.href = 'gcash://';
-                }, 800);
+                showToast('✅ Opening GCash QR Scanner...');
             }).catch(function() {
                 // Fallback for older browsers
                 const textArea = document.createElement('textarea');
@@ -950,8 +922,24 @@ if ($step === 2 && isset($_SESSION['gcash_client_name'])) {
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                showToast('✅ Number copied! Open GCash → Send Money → Paste');
             });
+            
+            // Try different GCash deep links for QR scanner
+            // GCash uses various deep link schemes
+            const deepLinks = [
+                'gcash://scan',           // Direct scan
+                'gcash://qr',             // QR feature
+                'gcash://pay/scan',       // Pay with scan
+                'https://m.gcash.com/gcash-app/scan'  // Web fallback
+            ];
+            
+            // Try the first deep link that works
+            window.location.href = deepLinks[0];
+            
+            // Fallback after delay if first doesn't work
+            setTimeout(function() {
+                showToast('📱 Scan the QR code shown above');
+            }, 1500);
         }
         
         function showToast(message) {
